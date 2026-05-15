@@ -2,4 +2,4 @@
 .vscode/
 *.pem
 *.db
-*.env
+.env

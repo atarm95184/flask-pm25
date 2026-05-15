@@ -1,5 +1,3 @@
-from unittest import result
-
 import pymysql
 import pandas as pd
 import requests, io
@@ -19,25 +17,31 @@ def get_latest_data():
     if not conn:
         result["success"] = False
         result["message"] = "資料庫開啟失敗"
+
         return result
 
-    sql = """select * from data where datacreationdate = 
-    (select max(datacreationdate) from data);"""
-    # sql = "select max(datacreationdate )from data  ;"
+    sql = """
+    select * from data where datacreationdate=
+    (select max(datacreationdate) from data);
+    """
+    # sql = 'select max(datacreationdate) from data;'
+
     try:
         cursor.execute(sql)
 
         # 取得資料欄位名稱
-        print(cursor.description)
+        # print(cursor.description)
         columns = [col[0] for col in cursor.description]
         rows = cursor.fetchall()
         result["success"] = True
         result["columns"] = columns
         result["rows"] = rows
+
         return result
     except Exception as e:
         result["success"] = False
-        result["message"] = f"資料庫開啟失敗: {e}"
+        result["message"] = f"資料庫查詢失敗:{e}"
+
         return result
     finally:
         conn.close()
@@ -45,14 +49,6 @@ def get_latest_data():
 
 def open_db():
     try:
-        conn = pymysql.connect(
-            host="gateway01.ap-northeast-1.prod.aws.tidbcloud.com",
-            port=4000,
-            user="24DMpkLyQ9cxn7q.root",
-            password="PTd4eX9iKr3let84",
-            database="test",
-            ssl={"ca": None},
-        )
         # print(os.getenv("HOST")) // os.getenv給本地端dotenv使用
         conn = pymysql.connect(
             host=os.environ.get("HOST"),
@@ -67,6 +63,7 @@ def open_db():
         return conn, cursor
     except Exception as e:
         print(e)
+
     return None, None
 
 
