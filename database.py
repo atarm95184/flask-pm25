@@ -20,12 +20,20 @@ def get_data_by_county(county):
         result["message"] = "資料庫開啟失敗"
 
         return result
-    sql="""select * from data where county=%s
-    and datacreationdate=
-    (select max(datacreationdate) from data);
+    #sql="""select * from data where county=%s
+    #and datacreationdate=
+    #(select max(datacreationdate) from data);
+    #"""
+
+    sql = """
+    select * from data 
+    where county = %s 
+    and datacreationdate = (
+        select max(datacreationdate) from data where county = %s
+    );
     """
     try:
-        cursor.execute(sql,(county,))
+        cursor.execute(sql,(county,county))
 
         # 取得資料欄位名稱
         rows = cursor.fetchall()
